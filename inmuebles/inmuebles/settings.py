@@ -40,7 +40,8 @@ INSTALLED_APPS = [
 
     # aplicaciones personalizadas:
     'inmueblesList_app',
-
+    
+    'rest_framework',
 ]
 
 MIDDLEWARE = [

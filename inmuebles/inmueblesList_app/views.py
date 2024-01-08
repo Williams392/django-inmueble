@@ -40,6 +40,8 @@ def inmueble_detalle(request, pk): # pk es el id.
 
 
 
+
+
 """
 _ Aquí está el flujo del código:
 
