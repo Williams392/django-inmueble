@@ -1,35 +1,91 @@
 # 3:
 
 from rest_framework import serializers
-from inmueblesList_app.models import Inmueble
+from inmueblesList_app.models import Edificacion, Empresa
 
+class EmpresaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Empresa
+        fields = "__all__" 
 
-# Core Arguments y Modelo de Serialization
-class InmuebleSerializer(serializers.ModelSerializer):
-
-    longitud_direccion = serializers.SerializerMethodField()
+class EdificacionSerializer(serializers.ModelSerializer):
 
     class Meta: 
-        model = Inmueble
+        model = Edificacion
         fields = "__all__" # mapiando toda la clase entidad
         #fields = ['id', 'pais', 'active', 'imagen'] # mostrar personalizado.
         #exclude = ['id'] # que no me muestre ese campo.
 
-    def get_longitud_direccion(self, object):
-        cantidad_caracteres = len(object.direccion) 
-        return cantidad_caracteres
 
-    def validate(self, data):
-        if data['direccion'] == data['pais']:
-            raise serializers.ValidationError("La direccion y el pais deben ser diferentes")
-        else:
-            return data
 
-    def validate_imagen(self, data):
-        if len(data) < 2:
-            raise serializers.ValidationError("La url de la imangen es muy corta")
-        else:
-            return data   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    # Metodos de validacion, etc:
+        
+    # longitud_direccion = serializers.SerializerMethodField()
+
+    # def get_longitud_direccion(self, object):
+    #     cantidad_caracteres = len(object.direccion) 
+    #     return cantidad_caracteres
+
+    # def validate(self, data):
+    #     if data['direccion'] == data['pais']:
+    #         raise serializers.ValidationError("La direccion y el pais deben ser diferentes")
+    #     else:
+    #         return data
+
+    # def validate_imagen(self, data):
+    #     if len(data) < 2:
+    #         raise serializers.ValidationError("La url de la imangen es muy corta")
+    #     else:
+    #         return data   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
