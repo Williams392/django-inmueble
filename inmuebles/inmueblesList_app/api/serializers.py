@@ -3,10 +3,7 @@
 from rest_framework import serializers
 from inmueblesList_app.models import Edificacion, Empresa
 
-class EmpresaSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Empresa
-        fields = "__all__" 
+
 
 class EdificacionSerializer(serializers.ModelSerializer):
 
@@ -16,6 +13,21 @@ class EdificacionSerializer(serializers.ModelSerializer):
         #fields = ['id', 'pais', 'active', 'imagen'] # mostrar personalizado.
         #exclude = ['id'] # que no me muestre ese campo.
 
+class EmpresaSerializer(serializers.HyperlinkedModelSerializer):
+    edificacionList = EdificacionSerializer(many=True, read_only=True)
+
+    # edificacionList = serializers.StringRelatedField(many=True) # solo el campo personalizado de la clase model selecionado.
+    # edificacionList = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+
+    # edificacionList = serializers.HyperlinkedRelatedField( # Genera un URL por cada inmueble.
+    #     many=True, 
+    #     read_only=True,
+    #     view_name='edificacion-detail',
+    #     )
+
+    class Meta:
+        model = Empresa
+        fields = "__all__" 
 
 
 

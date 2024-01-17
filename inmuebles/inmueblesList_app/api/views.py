@@ -12,7 +12,7 @@ class EmpresaAV(APIView):
 
     def get(self, request):
         empresas = Empresa.objects.all()
-        serializer = EmpresaSerializer(empresas, many=True)
+        serializer = EmpresaSerializer(empresas, many=True, context={'request': request})
         return Response(serializer.data)
     
     def post(self, request):
@@ -23,7 +23,40 @@ class EmpresaAV(APIView):
         else:
             return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
+class EmpresaDetalleAV(APIView):
 
+    def get(self, request, pk):
+        try:
+            empresa = Empresa.objects.get(pk=pk)
+        except Empresa.DoesNotExist:
+            return Response({'Error': 'Inmueble no encontrado'}, status=status.HTTP_404_NOT_FOUND)
+    
+        serializer = EmpresaSerializer(empresa, context={'request': request})
+        return Response(serializer.data)
+    
+    def put(self, request, pk):
+        try:
+            empresa = Empresa.objects.get(pk=pk)
+        except Empresa.DoesNotExist:
+            return Response({'Error': 'Inmueble no encontrado'}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = EmpresaSerializer(empresa, data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+    def delete(self, request, pk):
+        try:
+            empresa = Empresa.objects.get(pk=pk)
+        except Empresa.DoesNotExist:
+            return Response({'Error': 'Inmueble no encontrado'}, status=status.HTTP_404_NOT_FOUND)
+        
+        empresa.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+        
+        
 class EdificacionListAV(APIView):
 
     def get(self, request):
@@ -38,7 +71,6 @@ class EdificacionListAV(APIView):
              return Response(serializer.data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class EdificacionDetalleAV(APIView):
 
