@@ -1,11 +1,16 @@
 # 3:
 
 from rest_framework import serializers
-from inmueblesList_app.models import Edificacion, Empresa
+from inmueblesList_app.models import Edificacion, Empresa, Comentario
 
-
+class ComentarioSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comentario
+        fields = "__all__"
+    
 
 class EdificacionSerializer(serializers.ModelSerializer):
+    comentarios = ComentarioSerializer(many=True, read_only=True) # uniendo
 
     class Meta: 
         model = Edificacion
