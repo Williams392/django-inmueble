@@ -10,7 +10,7 @@ class ComentarioSerializer(serializers.ModelSerializer):
     
 
 class EdificacionSerializer(serializers.ModelSerializer):
-    comentarios = ComentarioSerializer(many=True, read_only=True) # uniendo
+    comentarios = ComentarioSerializer(many=True, read_only=True) # uniendo el model con el (related_name="comentarios")  # el nombre (related_name) es importante en los serializers para UNIFICAR LOS objetos JSON
 
     class Meta: 
         model = Edificacion
@@ -19,7 +19,7 @@ class EdificacionSerializer(serializers.ModelSerializer):
         #exclude = ['id'] # que no me muestre ese campo.
 
 class EmpresaSerializer(serializers.HyperlinkedModelSerializer):
-    edificacionList = EdificacionSerializer(many=True, read_only=True)
+    edificacionList = EdificacionSerializer(many=True, read_only=True) # uniendo
 
     # edificacionList = serializers.StringRelatedField(many=True) # solo el campo personalizado de la clase model selecionado.
     # edificacionList = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
