@@ -7,25 +7,100 @@ from inmueblesList_app.api.serializers import EdificacionSerializer, EmpresaSeri
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework import generics, mixins
+from rest_framework import viewsets
+from django.shortcuts import get_object_or_404
 
 
-class ComentarioList(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
+class ComentarioCreate(generics.CreateAPIView):
+    serializer_class = ComentarioSerializer
+
+    def perform_create(self, serializer):
+        pk = self.kwargs.get('pk')
+        inmueble = Edificacion.objects.get(pk=pk)
+        serializer.save(edificacion=inmueble)
+
+# ---------------------------------------------------------------------------------------------------
+# Otra forma mejor de usar estos 2 metodos GENERICOS: 
+# ---------------------------------------------------------------------------------------------------
+class ComentarioList(generics.ListCreateAPIView):
+    #queryset = Comentario.objects.all()
+    serializer_class = ComentarioSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs['pk']
+        return Comentario.objects.filter(edificacion=pk)
+
+class ComentarioDetail(generics.RetrieveUpdateDestroyAPIView): # Busqueda por id y Update
     queryset = Comentario.objects.all()
     serializer_class = ComentarioSerializer
 
-    def get(self, request, *args, **kwargs): 
-        return self.list(request, *args, **kwargs) # método genérico que va a disparar un evento interno para generar el response 
+# class ComentarioList(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
+#     queryset = Comentario.objects.all()
+#     serializer_class = ComentarioSerializer
 
-    def post(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
+#     def get(self, request, *args, **kwargs): 
+#         return self.list(request, *args, **kwargs) # método genérico que va a disparar un evento interno para generar el response 
 
-class ComentarioDetail(mixins.RetrieveModelMixin, generics.GenericAPIView):
-    queryset = Comentario.objects.all()
-    serializer_class = ComentarioSerializer
+#     def post(self, request, *args, **kwargs):
+#         return self.create(request, *args, **kwargs)
 
-    def get(self, request, *args, **kwargs): 
-        return self.retrieve(request, *args, **kwargs)
+# class ComentarioDetail(mixins.RetrieveModelMixin, generics.GenericAPIView):
+#     queryset = Comentario.objects.all()
+#     serializer_class = ComentarioSerializer
+
+#     def get(self, request, *args, **kwargs): 
+#         return self.retrieve(request, *args, **kwargs)
+# ---------------------------------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------------------------------
+# Con este metodo de 3 lineas actualiza, elimina, crea y busca por id.
+# ---------------------------------------------------------------------------------------------------
+class EmpresaVS(viewsets.ModelViewSet): 
+    queryset = Empresa.objects.all()
+    serializer_class = EmpresaSerializer
+
+# class EmpresaVS(viewsets.ViewSet): # ViewSet
+#     def list(self, request):
+#         queryset = Empresa.objects.all()
+#         serializer = EmpresaSerializer(queryset, many=True)
+#         return Response(serializer.data)
     
+#     def retrieve(self, request, pk=None):
+#         queryset = Empresa.objects.all()
+#         edificacionList = get_object_or_404(queryset, pk=pk)
+#         serializer = EmpresaSerializer(edificacionList)
+#         return Response(serializer.data)
+    
+#     def create(self, request):
+#         serializer = EmpresaSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data)
+#         else:
+#             Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+#     def update(self, request, pk):
+#         try:
+#             empresa = Empresa.objects.get(pk=pk)
+#         except Empresa.DoesNotExist:
+#             return Response({'error': 'Empresa no encontrada'}, status=status.HTTP_404_NOT_FOUND)
+        
+#         serializer = EmpresaSerializer(empresa, data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data)
+#         else:
+#             Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#     def destroy(self, request, pk):
+#         try:
+#             empresa = Empresa.objects.get(pk=pk)
+#         except Empresa.DoesNotExist:
+#             return Response({'error': 'Empresa no encontrada'}, status=status.HTTP_404_NOT_FOUND)
+        
+#         empresa.delete()
+#         return Response(status=status.HTTP_204_NO_CONTENT)
+# ---------------------------------------------------------------------------------------------------
 
 class EmpresaAV(APIView):
 
@@ -74,7 +149,7 @@ class EmpresaDetalleAV(APIView):
         
         empresa.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-        
+# ---------------------------------------------------------------------------------------------------
         
 class EdificacionListAV(APIView):
 

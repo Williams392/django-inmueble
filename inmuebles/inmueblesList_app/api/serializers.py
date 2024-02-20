@@ -6,7 +6,8 @@ from inmueblesList_app.models import Edificacion, Empresa, Comentario
 class ComentarioSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comentario
-        fields = "__all__"
+        exclude = ['edificacion']
+        #fields = "__all__"
     
 
 class EdificacionSerializer(serializers.ModelSerializer):
@@ -18,7 +19,7 @@ class EdificacionSerializer(serializers.ModelSerializer):
         #fields = ['id', 'pais', 'active', 'imagen'] # mostrar personalizado.
         #exclude = ['id'] # que no me muestre ese campo.
 
-class EmpresaSerializer(serializers.HyperlinkedModelSerializer):
+class EmpresaSerializer(serializers.ModelSerializer):
     edificacionList = EdificacionSerializer(many=True, read_only=True) # uniendo
 
     # edificacionList = serializers.StringRelatedField(many=True) # solo el campo personalizado de la clase model selecionado.
