@@ -4,6 +4,7 @@ from rest_framework import serializers
 from inmueblesList_app.models import Edificacion, Empresa, Comentario
 
 class ComentarioSerializer(serializers.ModelSerializer):
+    comentario_user = serializers.StringRelatedField(read_only=True)
     class Meta:
         model = Comentario
         exclude = ['edificacion']

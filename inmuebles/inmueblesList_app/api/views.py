@@ -9,15 +9,26 @@ from rest_framework.views import APIView
 from rest_framework import generics, mixins
 from rest_framework import viewsets
 from django.shortcuts import get_object_or_404
-
+from rest_framework.exceptions import ValidationError
+from rest_framework.permissions import IsAuthenticated
 
 class ComentarioCreate(generics.CreateAPIView):
     serializer_class = ComentarioSerializer
+    
+    def get_queryset(self):
+        return Comentario.objects.all()
 
     def perform_create(self, serializer):
         pk = self.kwargs.get('pk')
         inmueble = Edificacion.objects.get(pk=pk)
-        serializer.save(edificacion=inmueble)
+
+        user = self.request.user
+        comentario_queryset = Comentario.objects.filter(edificacion=inmueble, comentario_user=user)
+
+        if comentario_queryset.exists(): # exists -> es si existe data
+            raise ValidationError("El usuario ya escribio un comentario para este inmueble")
+        
+        serializer.save(edificacion=inmueble, comentario_user=user)
 
 # ---------------------------------------------------------------------------------------------------
 # Otra forma mejor de usar estos 2 metodos GENERICOS: 
@@ -54,8 +65,12 @@ class ComentarioDetail(generics.RetrieveUpdateDestroyAPIView): # Busqueda por id
 
 # ---------------------------------------------------------------------------------------------------
 # Con este metodo de 3 lineas actualiza, elimina, crea y busca por id.
+    # . Solo para mantenimientos genericos, No para logica de NEgocio oh a varias entidades.
 # ---------------------------------------------------------------------------------------------------
 class EmpresaVS(viewsets.ModelViewSet): 
+
+    permission_classes = [IsAuthenticated]
+
     queryset = Empresa.objects.all()
     serializer_class = EmpresaSerializer
 

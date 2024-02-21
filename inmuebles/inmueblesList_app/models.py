@@ -3,6 +3,7 @@
 
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
+from  django.contrib.auth.models import User
 
 class Empresa(models.Model):
     nombre = models.CharField(max_length = 250)
@@ -25,6 +26,7 @@ class Edificacion(models.Model):
         return f"{self.direccion} - {self.pais}" # quiero que retorne para q muestre como indice el elemento guardado.
 
 class Comentario(models.Model):
+    comentario_user = models.ForeignKey(User, on_delete=models.CASCADE)
     calificacion = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
     texto = models.CharField( max_length = 200, null=True )
     edificacion = models.ForeignKey(Edificacion, on_delete=models.CASCADE, related_name="comentarios")

@@ -127,4 +127,18 @@ STATIC_URL = '/static/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+#-----------------------------------------------------------------------
+# Ahora en adelanto solamente un USUARIO va a tener acceso alas funciones 
+# y clases del proyecto despues de haberse logueado:
+# pagina -> https://www.django-rest-framework.org/api-guide/permissions/
+#----------------------------------------------------------------------- 
+# REST_FRAMEWORK = { 
+#     'DEFAULT_PERMISSION_CLASSES': [
+#         'rest_framework.permissions.IsAuthenticated',
+#     ]
+# }
+#-----------------------------------------------------------------------
