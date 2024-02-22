@@ -49,6 +49,6 @@
 ]
 ```
 
-# Project:
+# Proyecto:
 
 <a href='https://postimages.org/' target='_blank'><img src='https://i.postimg.cc/HnT2KJ7V/imagen-2024-02-22-170926918.png' border='0' alt='imagen-2024-02-22-170926918'/></a>
