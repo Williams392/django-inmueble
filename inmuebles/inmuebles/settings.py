@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # aplicaciones personalizadas:
+    # aplicaciones personalizadas y creadas:
     'inmueblesList_app',
     'user_app',
     
