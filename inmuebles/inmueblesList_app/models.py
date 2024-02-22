@@ -19,6 +19,8 @@ class Edificacion(models.Model):
     descripcion = models.CharField(max_length = 500)
     imagen = models.CharField(max_length = 900)
     active = models.BooleanField( default = True)
+    avg_calificacion = models.FloatField(default = 0)
+    number_calificacion = models.IntegerField(default = 0)
     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, related_name="edificacionList")  # el nombre (related_name) es importante en los serializers para UNIFICAR LOS objetos JSON
     created = models.DateTimeField(auto_now_add=True)
 

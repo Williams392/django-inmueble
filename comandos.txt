@@ -52,3 +52,4 @@ comando -> [python manage.py createsuperuser]
  comando -> pip install djangorestframework
 
  9. 
+ python manage.py startapp user_app

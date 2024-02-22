@@ -40,8 +40,10 @@ INSTALLED_APPS = [
 
     # aplicaciones personalizadas:
     'inmueblesList_app',
+    'user_app',
     
     'rest_framework',
+    'rest_framework.authtoken', # y hacer un -> python manage.py migrate, para que aparesca en el DjangoAdminstration
 ]
 
 MIDDLEWARE = [
@@ -142,3 +144,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #     ]
 # }
 #-----------------------------------------------------------------------
+
+REST_FRAMEWORK = {
+    # 'DEFAULT_AUTHENTICATION_CLASSES': [
+    #     'rest_framework.authentication.BasicAuthentication',
+    # ]
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ]
+}

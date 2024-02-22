@@ -11,6 +11,7 @@ from rest_framework import viewsets
 from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
+from inmueblesList_app.api.permissions import AdminOrReadOnly, ComentarioUserOrReadOnly
 
 class ComentarioCreate(generics.CreateAPIView):
     serializer_class = ComentarioSerializer
@@ -28,6 +29,14 @@ class ComentarioCreate(generics.CreateAPIView):
         if comentario_queryset.exists(): # exists -> es si existe data
             raise ValidationError("El usuario ya escribio un comentario para este inmueble")
         
+        if inmueble.number_calificacion == 0:
+            inmueble.avg_calificacion = serializer.validated_data['calificacion']
+        else:
+            inmueble.avg_calificacion = (serializer.validated_data['calificacion'] + inmueble.avg_calificacion/2)
+
+        inmueble.number_calificacion = inmueble.number_calificacion + 1
+        inmueble.save()
+
         serializer.save(edificacion=inmueble, comentario_user=user)
 
 # ---------------------------------------------------------------------------------------------------
@@ -36,6 +45,7 @@ class ComentarioCreate(generics.CreateAPIView):
 class ComentarioList(generics.ListCreateAPIView):
     #queryset = Comentario.objects.all()
     serializer_class = ComentarioSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         pk = self.kwargs['pk']
@@ -44,6 +54,8 @@ class ComentarioList(generics.ListCreateAPIView):
 class ComentarioDetail(generics.RetrieveUpdateDestroyAPIView): # Busqueda por id y Update
     queryset = Comentario.objects.all()
     serializer_class = ComentarioSerializer
+
+    permission_classes = [ComentarioUserOrReadOnly]
 
 # class ComentarioList(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
 #     queryset = Comentario.objects.all()
@@ -69,7 +81,7 @@ class ComentarioDetail(generics.RetrieveUpdateDestroyAPIView): # Busqueda por id
 # ---------------------------------------------------------------------------------------------------
 class EmpresaVS(viewsets.ModelViewSet): 
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AdminOrReadOnly] # el Admi viene desde -> ( api/permission )
 
     queryset = Empresa.objects.all()
     serializer_class = EmpresaSerializer

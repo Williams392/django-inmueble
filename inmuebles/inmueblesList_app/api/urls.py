@@ -20,5 +20,5 @@ urlpatterns = [
 
     path('edificacion/<int:pk>/comentario-create/', ComentarioCreate.as_view(), name='comentario-create'), # insertar new comentarios
     path('edificacion/<int:pk>/comentario/', ComentarioList.as_view(), name='comentario-list'),
-    path('comentario/<int:pk>', ComentarioDetail.as_view(), name='comentario-detail'),
+    path('edificacion/comentario/<int:pk>', ComentarioDetail.as_view(), name='comentario-detail'),
 ]
