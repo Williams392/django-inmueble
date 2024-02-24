@@ -51,5 +51,8 @@ comando -> [python manage.py createsuperuser]
  8. Instalar DjangoRestFramework:
  comando -> pip install djangorestframework
 
- 9. 
- python manage.py startapp user_app
+ 9. cleando una app_user para generer token y usuario desde json:
+ python manage.py startapp user_app"
+
+ 10. Permiter generer token:
+ pip install djangorestframework_simplejwt

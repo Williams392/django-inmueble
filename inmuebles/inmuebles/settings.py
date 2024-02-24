@@ -150,6 +150,20 @@ REST_FRAMEWORK = {
     #     'rest_framework.authentication.BasicAuthentication',
     # ]
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
-    ]
+        #'rest_framework.authentication.TokenAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ], 
+    # Establecer la política de limitación con 'THROTTLING' -> https://www.django-rest-framework.org/api-guide/throttling/
+    # 'DEFAULT_THROTTLE_CLASSES': [
+    #     'rest_framework.throttling.AnonRateThrottle',
+    #     'rest_framework.throttling.UserRateThrottle'
+    # ], ----------------------------------------------
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '5/day',
+        'user': '10/day'
+    }
+}
+
+SIMPLE_JWT = {
+    'ROTATE_REFRESH_TOKENS': True
 }

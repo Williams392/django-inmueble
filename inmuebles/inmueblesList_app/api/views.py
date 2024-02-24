@@ -11,10 +11,13 @@ from rest_framework import viewsets
 from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
-from inmueblesList_app.api.permissions import AdminOrReadOnly, ComentarioUserOrReadOnly
+from inmueblesList_app.api.permissions import IsAdminOrReadOnly, IsComentarioUserOrReadOnly
+from rest_framework.throttling import UserRateThrottle, AnonRateThrottle
+
 
 class ComentarioCreate(generics.CreateAPIView):
     serializer_class = ComentarioSerializer
+    permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
         return Comentario.objects.all()
@@ -45,7 +48,8 @@ class ComentarioCreate(generics.CreateAPIView):
 class ComentarioList(generics.ListCreateAPIView):
     #queryset = Comentario.objects.all()
     serializer_class = ComentarioSerializer
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated] # solo los usuarios logeados
+    throttle_classes = [UserRateThrottle, AnonRateThrottle] # limitando los numeros de request
 
     def get_queryset(self):
         pk = self.kwargs['pk']
@@ -55,7 +59,9 @@ class ComentarioDetail(generics.RetrieveUpdateDestroyAPIView): # Busqueda por id
     queryset = Comentario.objects.all()
     serializer_class = ComentarioSerializer
 
-    permission_classes = [ComentarioUserOrReadOnly]
+    permission_classes = [IsComentarioUserOrReadOnly]
+    throttle_classes = [UserRateThrottle, AnonRateThrottle] # limitando los numeros de request
+
 
 # class ComentarioList(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
 #     queryset = Comentario.objects.all()
@@ -81,7 +87,7 @@ class ComentarioDetail(generics.RetrieveUpdateDestroyAPIView): # Busqueda por id
 # ---------------------------------------------------------------------------------------------------
 class EmpresaVS(viewsets.ModelViewSet): 
 
-    permission_classes = [AdminOrReadOnly] # el Admi viene desde -> ( api/permission )
+    permission_classes = [IsAdminOrReadOnly] # el Admi viene desde -> ( api/permission )
 
     queryset = Empresa.objects.all()
     serializer_class = EmpresaSerializer
@@ -178,8 +184,8 @@ class EmpresaDetalleAV(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 # ---------------------------------------------------------------------------------------------------
         
-class EdificacionListAV(APIView):
-
+class EdificacionAV(APIView):
+    permission_classes = [IsAdminOrReadOnly]
     def get(self, request):
         edificacion = Edificacion.objects.all()
         serializer = EdificacionSerializer(edificacion, many=True)
@@ -194,7 +200,7 @@ class EdificacionListAV(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class EdificacionDetalleAV(APIView):
-
+    permission_classes = [IsAdminOrReadOnly]
     def get(self, request, pk): # buscar un inmueble por su id
         try:
             edificacion = Edificacion.objects.get(pk=pk)
