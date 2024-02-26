@@ -56,3 +56,6 @@ comando -> [python manage.py createsuperuser]
 
  10. Permiter generer token:
  pip install djangorestframework_simplejwt
+
+ 11. Para busqueda:
+ pip install django-filter

@@ -12,12 +12,27 @@ from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 from inmueblesList_app.api.permissions import IsAdminOrReadOnly, IsComentarioUserOrReadOnly
-from rest_framework.throttling import UserRateThrottle, AnonRateThrottle
+from rest_framework.throttling import UserRateThrottle, AnonRateThrottle, ScopedRateThrottle
+from inmueblesList_app.api.throttling import ComentarioCreateThrottle, ComentarioListThrottle
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
 
 
+class UsuarioComentario(generics.ListAPIView): # filtro con los nombres de usuarios.
+    serializer_class = ComentarioSerializer
+
+    def get_queryset(self):
+        username = self.kwargs['username']
+        return Comentario.objects.filter(comentario_user__username=username) # 2 rayas abajo es para acceder ala propiedad de su objeto comentario. 
+
+    # def get_queryset(self):
+    #     username = self.request.query_params.get['username', None] # cambiando para obtener desde un parametro.
+    #     return Comentario.objects.filter(comentario_user__username=username)
+    
 class ComentarioCreate(generics.CreateAPIView):
     serializer_class = ComentarioSerializer
     permission_classes = [IsAuthenticated]
+    throttle_classes = [ComentarioCreateThrottle]
     
     def get_queryset(self):
         return Comentario.objects.all()
@@ -48,8 +63,12 @@ class ComentarioCreate(generics.CreateAPIView):
 class ComentarioList(generics.ListCreateAPIView):
     #queryset = Comentario.objects.all()
     serializer_class = ComentarioSerializer
-    #permission_classes = [IsAuthenticated] # solo los usuarios logeados
-    throttle_classes = [UserRateThrottle, AnonRateThrottle] # limitando los numeros de request
+    #permission_classes = [IsAuthenticated] # solo los usuarios logeados.
+    #throttle_classes = [UserRateThrottle, AnonRateThrottle] # limitando los numeros de request.
+    throttle_classes = [ComentarioListThrottle, AnonRateThrottle] # este es un throttle PERSONALIZADO.
+    
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['comentario_user__username', 'active']
 
     def get_queryset(self):
         pk = self.kwargs['pk']
@@ -60,8 +79,9 @@ class ComentarioDetail(generics.RetrieveUpdateDestroyAPIView): # Busqueda por id
     serializer_class = ComentarioSerializer
 
     permission_classes = [IsComentarioUserOrReadOnly]
-    throttle_classes = [UserRateThrottle, AnonRateThrottle] # limitando los numeros de request
-
+    #throttle_classes = [UserRateThrottle, AnonRateThrottle] # limitando los numeros de request
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'comentario-detail'
 
 # class ComentarioList(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
 #     queryset = Comentario.objects.all()
@@ -184,6 +204,19 @@ class EmpresaDetalleAV(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 # ---------------------------------------------------------------------------------------------------
         
+
+class EdifacionList(generics.ListAPIView): # filtro para buscar.
+    queryset = Edificacion.objects.all()
+    serializer_class = EdificacionSerializer
+
+    #filter_backends = [DjangoFilterBackend] # la busqueda debe de ser nombre completo.
+    # filterset_fields = ['direccion', 'empresa__nombre'] # siempre 2 barras abajo para llamar al objeto de la BD
+
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter] # las busqueda mas rapida no necesita compretar todo.
+    search_fields = ['direccion', 'empresa__nombre']
+
+
+
 class EdificacionAV(APIView):
     permission_classes = [IsAdminOrReadOnly]
     def get(self, request):

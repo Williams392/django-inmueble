@@ -14,6 +14,8 @@ class ComentarioSerializer(serializers.ModelSerializer):
 class EdificacionSerializer(serializers.ModelSerializer):
     comentarios = ComentarioSerializer(many=True, read_only=True) # uniendo el model con el (related_name="comentarios")  # el nombre (related_name) es importante en los serializers para UNIFICAR LOS objetos JSON
 
+    empresa_nombre = serializers.CharField(source='empresa.nombre')
+
     class Meta: 
         model = Edificacion
         fields = "__all__" # mapiando toda la clase entidad
