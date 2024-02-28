@@ -78,16 +78,43 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'inmuebles.wsgi.application'
 
+AUTH_USER_MODEL = 'user_app.Account' # indicándole cuál es la nueva clase que va a administrar los usuarios.
+
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+# sqlite:
+# para conectar a posgreSQL: pip install psycopg2-binary
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
+# PostgreSQL:
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'django_inmuebles',
+        'USER':'williams392',
+        'PASSWORD':'1234',
+        'HOST':'localhost',
+        'PORT':'5432'
     }
 }
+
+# Oraku:
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'USER': 'zfevkeovdmuxcl',
+#         'NAME': 'd543vfkft9sspl',
+#         'PASSWORD': '6e04338ffa615cadb25b8778a889b3819bcd26267fcab2ccd778de8144615b90',
+#         'HOST': 'ec2-52-22-81-147.compute-1.amazonaws.com'
+#     }
+# }
 
 
 # Password validation
@@ -166,7 +193,12 @@ REST_FRAMEWORK = {
         'comentario-create': '200/day',
         'comentario-list': '3000/day',
         'comentario-detail': '1000/day',
-    }
+    },
+    'DEFAULT_RENDERER_CLASSES': ( # con esto la vista de la API se renderizarán como JSON de forma predeterminada.
+        'rest_framework.renderers.JSONRenderer', 
+    ),
+    #'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination', # para que de formato de paginacion
+    #'PAGE_SIZE': 1,
 }
 
 SIMPLE_JWT = {

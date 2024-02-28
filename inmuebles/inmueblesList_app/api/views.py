@@ -1,9 +1,13 @@
 # 2:
 
-from rest_framework.response import Response 
 from inmueblesList_app.models import Edificacion, Empresa, Comentario
 from inmueblesList_app.api.serializers import EdificacionSerializer, EmpresaSerializer, ComentarioSerializer
+from inmueblesList_app.api.permissions import IsAdminOrReadOnly, IsComentarioUserOrReadOnly
+from inmueblesList_app.api.throttling import ComentarioCreateThrottle, ComentarioListThrottle
+from inmueblesList_app.api.pagination import EdificacionPagination, EdificacionLOPagination
+
 #from rest_framework.decorators import api_view
+from rest_framework.response import Response 
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework import generics, mixins
@@ -11,11 +15,10 @@ from rest_framework import viewsets
 from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
-from inmueblesList_app.api.permissions import IsAdminOrReadOnly, IsComentarioUserOrReadOnly
 from rest_framework.throttling import UserRateThrottle, AnonRateThrottle, ScopedRateThrottle
-from inmueblesList_app.api.throttling import ComentarioCreateThrottle, ComentarioListThrottle
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
+
 
 
 class UsuarioComentario(generics.ListAPIView): # filtro con los nombres de usuarios.
@@ -214,6 +217,8 @@ class EdifacionList(generics.ListAPIView): # filtro para buscar.
 
     filter_backends = [filters.SearchFilter, filters.OrderingFilter] # las busqueda mas rapida no necesita compretar todo.
     search_fields = ['direccion', 'empresa__nombre']
+    pagination_class = EdificacionPagination
+    #pagination_class =  EdificacionLOPagination
 
 
 
