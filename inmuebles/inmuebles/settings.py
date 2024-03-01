@@ -10,8 +10,15 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
+
+# YO | configuracion y pasos para hacer deploy con RENDER: https://docs.render.com/deploy-django
+
+
 from pathlib import Path
 from datetime import timedelta
+
+import os # por RENDER
+import dj_database_url # por RENDER
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,14 +27,24 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-b7sc$s$1!x(8n3me63zs@z()xda8lg+2clrywxmx%oe@gaw^1b'
+
+# SECURITY WARNING: keep the secret key used in production secret! 
+# SECRET_KEY = 'django-insecure-b7sc$s$1!x(8n3me63zs@z()xda8lg+2clrywxmx%oe@gaw^1b' # por RENDER
+# por render comenter -> SECRET_KEY 
+SECRET_KEY = os.environ.get('SECRET_KEY', default='your secret key') # por RENDER
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True # por RENDER
+DEBUG = 'RENDER' not in os.environ # por RENDER
 
 ALLOWED_HOSTS = []
 
+# por RENDER: ------
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+# ------------------
 
 # Application definition
 
@@ -56,6 +73,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', # por RENDER
 ]
 
 ROOT_URLCONF = 'inmuebles.urls'
@@ -94,18 +112,28 @@ AUTH_USER_MODEL = 'user_app.Account' # indicándole cuál es la nueva clase que 
 # }
 
 # PostgreSQL:
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'django_inmuebles',
+#         'USER':'williams392',
+#         'PASSWORD':'1234',
+#         'HOST':'localhost',
+#         'PORT':'5432'
+#     }
+# }
+
+# DATABASE_URL=postgresql://williams392:1234@localhost:5432/django_inmuebles
+# Deploy por RENDER:
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'django_inmuebles',
-        'USER':'williams392',
-        'PASSWORD':'1234',
-        'HOST':'localhost',
-        'PORT':'5432'
-    }
+    'default': dj_database_url.config(
+        default='postgresql://williams392:1234@localhost:5432/django_inmuebles',
+        conn_max_age=600
+    )
 }
 
-# Haciendo deploy dentro de los servidores de -> HEROKU:
+
+# Haciendo deploy dentro de los servidores de -> HEROKU no se puedo ahora es de PAGA:
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql',
@@ -154,6 +182,17 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# por RENDER: --------------
+# Este código de producción podría interrumpir el modo de desarrollo, por lo que verificamos si estamos en modo DEBUG.
+if not DEBUG:
+    # Tell Django to copy static assets into a path called `staticfiles` (this is specific to Render)
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    # Enable the WhiteNoise storage backend, which compresses static files to reduce disk use
+    # and renames the files with unique names for each version to support long-term caching
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# --------------------------
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field

@@ -62,3 +62,10 @@ comando -> [python manage.py createsuperuser]
 
  12. para conectar a posgreSQL: 
  pip install psycopg2-binary
+
+
+
+ 14. Para hacer deploy en la nube con -> RENDER
+
+ . Pasos: https://docs.render.com/deploy-django
+ . video: https://www.youtube.com/watch?v=e6PkGDH4wWA&ab_channel=Fazt (02:47:57 Deploy en render.com)
