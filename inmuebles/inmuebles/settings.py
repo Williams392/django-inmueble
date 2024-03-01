@@ -105,7 +105,7 @@ DATABASES = {
     }
 }
 
-# Oraku:
+# Haciendo deploy dentro de los servidores de -> HEROKU:
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql',
