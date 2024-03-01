@@ -35,7 +35,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', default='your secret key') # por RENDE
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = True # por RENDER
+# DEBUG = True 
 DEBUG = 'RENDER' not in os.environ # por RENDER
 
 ALLOWED_HOSTS = []
@@ -123,14 +123,14 @@ AUTH_USER_MODEL = 'user_app.Account' # indicándole cuál es la nueva clase que 
 #     }
 # }
 
-# DATABASE_URL=postgresql://williams392:1234@localhost:5432/django_inmuebles
-# Deploy por RENDER:
+# Deploy por RENDER: ----------------
 DATABASES = {
     'default': dj_database_url.config(
         default='postgresql://williams392:1234@localhost:5432/django_inmuebles',
         conn_max_age=600
     )
 }
+# ----------------------------------
 
 
 # Haciendo deploy dentro de los servidores de -> HEROKU no se puedo ahora es de PAGA:
@@ -246,3 +246,10 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=365),
 
 }
+
+
+# para tener database LOCAL:
+try:
+    from .local_settings import DATABASES, DEBUG # Para sobrescribir la DB en mi computadora nms en RENDER
+except ImportError as e:
+    print('Error:', e.msg)
