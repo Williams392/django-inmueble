@@ -21,7 +21,8 @@ import os # por RENDER
 import dj_database_url # por RENDER
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+#BASE_DIR = Path(__file__).resolve().parent.parent # original
+BASE_DIR=os.path.dirname(os.path.dirname(os.path.abspath(__file__))) # cambio para q apunte al directorio PRINCIPAL en server y local.
 
 
 # Quick-start development settings - unsuitable for production
@@ -35,10 +36,10 @@ SECRET_KEY = os.environ.get('SECRET_KEY', default='your secret key') # por RENDE
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = True # por RENDER
+DEBUG = True 
 DEBUG = 'RENDER' not in os.environ # por RENDER
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*'] # porner '*' permite la entrada de cualquier URL.
 
 # por RENDER: ------
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
@@ -123,14 +124,14 @@ AUTH_USER_MODEL = 'user_app.Account' # indicándole cuál es la nueva clase que 
 #     }
 # }
 
-# DATABASE_URL=postgresql://williams392:1234@localhost:5432/django_inmuebles
-# Deploy por RENDER:
+# Deploy por RENDER: ----------------
 DATABASES = {
     'default': dj_database_url.config(
         default='postgresql://williams392:1234@localhost:5432/django_inmuebles',
         conn_max_age=600
     )
 }
+# ----------------------------------
 
 
 # Haciendo deploy dentro de los servidores de -> HEROKU no se puedo ahora es de PAGA:
@@ -181,15 +182,17 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_ROOT=os.path.join(BASE_DIR, 'staticfiles') # Donde van a estar los archivos de tipo HTML, CSS, etc.
+STATIC_URL = '/static/'  
+STATICFILES_STORAGE='whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # por RENDER: --------------
 # Este código de producción podría interrumpir el modo de desarrollo, por lo que verificamos si estamos en modo DEBUG.
 if not DEBUG:
     # Tell Django to copy static assets into a path called `staticfiles` (this is specific to Render)
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-    # Enable the WhiteNoise storage backend, which compresses static files to reduce disk use
-    # and renames the files with unique names for each version to support long-term caching
+    # Habilite el backend de almacenamiento WhiteNoise, que comprime archivos estáticos para reducir el uso del disco
+    # y cambia el nombre de los archivos con nombres únicos para cada versión para admitir el almacenamiento en caché a largo plazo
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # --------------------------
 
@@ -246,3 +249,10 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=365),
 
 }
+
+
+# para tener database LOCAL:
+try:
+    from .local_settings import DATABASES, DEBUG # Para sobrescribir la DB en mi computadora nms en RENDER
+except ImportError as e:
+    print('Error:', e.msg)

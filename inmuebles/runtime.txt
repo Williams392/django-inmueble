@@ -1,0 +1,3 @@
+# quí tengo que indicarle cuál va a ser la versión de Python que quiera que se ejecute en el servidor:
+
+python-3.10.9

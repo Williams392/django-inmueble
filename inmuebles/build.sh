@@ -1,4 +1,4 @@
-# Este archivo esta para el sistema linux, pedidor por RENDER:
+# Este archivo es un script para que render siga estos pasos para que instale:
 
 
 #!/usr/bin/env bash

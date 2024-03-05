@@ -69,3 +69,7 @@ comando -> [python manage.py createsuperuser]
 
  . Pasos: https://docs.render.com/deploy-django
  . video: https://www.youtube.com/watch?v=e6PkGDH4wWA&ab_channel=Fazt (02:47:57 Deploy en render.com)
+
+
+ 15. Para que se vuela a regener hacer denuevo:
+ comando: pip freeze > requirements.txt
