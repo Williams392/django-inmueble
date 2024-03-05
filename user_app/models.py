@@ -38,7 +38,7 @@ class MyAccountManager(BaseUserManager):
             last_name = last_name,
         )
 
-        user.is_admin = True
+        user.is_admin = True # esto se vizualiza adentro del Admin
         user.is_active = True
         user.is_staff = True
         user.is_superadmin = True
