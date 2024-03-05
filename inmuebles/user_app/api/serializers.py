@@ -39,3 +39,14 @@ class RegistrationSerializer(serializers.ModelSerializer):
         account.save()
         return account
     
+
+class CreateSuperUserSerializer(RegistrationSerializer):
+    def save(self):
+        account = Account.objects.create_superuser(
+            first_name=self.validated_data['first_name'],
+            last_name=self.validated_data['last_name'],
+            email=self.validated_data['email'],
+            username=self.validated_data['username'],
+            password=self.validated_data['password']
+        )
+        return account
